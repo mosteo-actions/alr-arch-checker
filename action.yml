@@ -1,0 +1,17 @@
+name: 'Alire architecture checker'
+description: 'Verify that the `alr` in PATH matches the runner architecture'
+runs:
+  using: 'composite'
+  steps:
+    - name: Display configuration and verify matching arch
+      shell: bash
+      run: |
+        echo "Runner architecture: ${{runner.arch}}"
+        case ${{runner.arch}} in
+          X64)   target_arch=X86_64;;
+          ARM64) target_arch=AARCH64;;
+          *)     echo "Unknown arch" && exit 1;;
+        esac
+        echo "alr target architecture: $target_arch"
+        alr version
+        alr version | grep 'host-arch:' | awk '{print $2}' | grep -q $target_arch || exit 1

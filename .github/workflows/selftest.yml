@@ -1,0 +1,30 @@
+name: Selftest
+
+on: [push, pull_request]
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os:
+                    - macos-13         # x86_64
+                    - macos-latest     # aarch64
+                    - ubuntu-latest    # x86_64
+                    - ubuntu-24.04-arm # aarch64
+                    - windows-latest   # x86_64
+
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+          - name: Set up the latest alr
+            uses: alire-project/setup-alire@v4
+            with:
+              version: 2.1.0  # Minimum with ubuntu aarch64 support
+              toolchain: --disable-assistant
+              msys2: false
+
+          - name: Run action
+            uses: ./
